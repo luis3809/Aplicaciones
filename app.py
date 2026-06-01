@@ -4,9 +4,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 # Estilo profesional
-sns.set_theme(style="white")
+sns.set_theme(style="whitegrid")
 
-st.title("🔍 Análisis de Correlación - Motor CAT G3600")
+st.title("🔥 Mapa de Calor Profesional - Motor CAT G3600")
 
 archivo = st.file_uploader("📂 Carga tu archivo data.csv", type=["csv"])
 
@@ -16,37 +16,34 @@ if archivo is not None:
     st.subheader("📄 Vista previa del dataset")
     st.dataframe(df)
 
-    # Variables esperadas
     variables = ["RPM", "Temperatura_aceite", "Temperatura_refrigerante", "Presion_aceite", "Carga"]
     variables_presentes = [v for v in variables if v in df.columns]
 
     if len(variables_presentes) >= 2:
 
-        # Matriz de correlación
         st.subheader("📊 Matriz de correlación de Pearson")
         corr = df[variables_presentes].corr(method="pearson")
         st.dataframe(corr)
 
-        # Heatmap profesional
-        st.subheader("🔥 Mapa de calor profesional")
+        st.subheader("🎨 Heatmap Profesional con Colores Intensos")
 
-        fig, ax = plt.subplots(figsize=(8, 6))
-
-        # Paleta elegante
-        cmap = sns.diverging_palette(220, 20, as_cmap=True)
+        fig, ax = plt.subplots(figsize=(9, 6))
 
         sns.heatmap(
             corr,
             annot=True,
             fmt=".2f",
-            cmap=cmap,
-            linewidths=0.5,
+            cmap="RdBu_r",          # Paleta con pigmentación fuerte
+            center=0,               # Asegura contraste
+            robust=True,            # Evita colores apagados
+            linewidths=1,           # Líneas más visibles
+            linecolor="black",      # Bordes profesionales
             cbar_kws={"shrink": 0.8, "label": "Coeficiente de correlación"},
             square=True,
             ax=ax
         )
 
-        ax.set_title("Correlación entre Variables del Motor CAT G3600", fontsize=14, fontweight="bold")
+        ax.set_title("Correlación entre Variables del Motor CAT G3600", fontsize=16, fontweight="bold")
         plt.xticks(rotation=45, ha="right")
         plt.yticks(rotation=0)
 
