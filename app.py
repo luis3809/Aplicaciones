@@ -1,61 +1,30 @@
 import streamlit as st
 import pandas as pd
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
+import seaborn as sns
 import matplotlib.pyplot as plt
 
-st.title("🔧 Clustering de Condiciones de Operación - Bomba Centrífuga API")
+st.title("Análisis de Correlación - Motor CAT G3600")
 
-st.write("""
-Carga tu archivo **data.csv** con las variables reales de la bomba centrífuga API.
-El sistema agrupa automáticamente las condiciones de operación en modos:
-normal, alerta y crítico.
-""")
+# Subir archivo data.csv
+archivo = st.file_uploader("📂 Carga tu archivo data.csv", type=["csv"])
 
-# --- CARGA DEL ARCHIVO data.csv ---
-uploaded_file = st.file_uploader("📂 Sube tu archivo data.csv", type=["csv"])
+if archivo is not None:
+    df = pd.read_csv(archivo)
 
-if uploaded_file:
-    df = pd.read_csv(uploaded_file)
+    st.subheader("📄 Vista previa del dataset")
+    st.dataframe(df)
 
-    st.write("### 👀 Vista previa del dataset cargado")
-    st.dataframe(df.head())
+    variables = ["RPM", "Temperatura_aceite", "Temperatura_refrigerante", "Presion_aceite", "Carga"]
+    variables_presentes = [v for v in variables if v in df.columns]
 
-    # Columnas esperadas del dataset de la bomba
-    columnas_bomba = ["horas_operacion", "temperatura", "vibracion", "presion", "fallas"]
+    if len(variables_presentes) >= 2:
+        st.subheader("📊 Matriz de correlación de Pearson")
+        corr = df[variables_presentes].corr(method="pearson")
+        st.dataframe(corr)
 
-    # Validación
-    if not all(col in df.columns for col in columnas_bomba):
-        st.error("❌ El archivo no contiene las columnas requeridas: " + ", ".join(columnas_bomba))
+        st.subheader("🔥 Mapa de calor (Heatmap)")
+        fig, ax = plt.subplots(figsize=(6, 4))
+        sns.heatmap(corr, annot=True, cmap="coolwarm", linewidths=0.5, vmin=-1, vmax=1, ax=ax)
+        st.pyplot(fig)
     else:
-        st.success("✔ Archivo válido. Puedes ejecutar el clustering.")
-
-        # Selección del número de clusters
-        n_clusters = st.slider("Número de clusters", 2, 6, 3)
-
-        if st.button("🚀 Ejecutar clustering"):
-            # Modelo K-Means
-            modelo = KMeans(n_clusters=n_clusters, random_state=42)
-            df["cluster"] = modelo.fit_predict(df[columnas_bomba])
-
-            # Mostrar centroides
-            st.write("### 📌 Centroides de cada cluster")
-            centroides = pd.DataFrame(modelo.cluster_centers_, columns=columnas_bomba)
-            st.dataframe(centroides)
-
-            # PCA para visualización 2D
-            pca = PCA(n_components=2)
-            componentes = pca.fit_transform(df[columnas_bomba])
-            df["PC1"] = componentes[:, 0]
-            df["PC2"] = componentes[:, 1]
-
-            # Gráfico PCA
-            fig, ax = plt.subplots()
-            scatter = ax.scatter(df["PC1"], df["PC2"], c=df["cluster"], cmap="viridis")
-            plt.xlabel("PC1")
-            plt.ylabel("PC2")
-            plt.title("Visualización de Clusters - Bomba Centrífuga API")
-            st.pyplot(fig)
-
-            st.write("### 📄 Dataset con cluster asignado")
-            st.dataframe(df)
+        st.error("El archivo debe contener al menos dos columnas válidas.")
