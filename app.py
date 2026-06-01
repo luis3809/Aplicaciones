@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
-import umap
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 
-st.title("🔍 UMAP - Dataset Industrial")
+st.title("📉 PCA 2D - Dataset Industrial")
 
 archivo = st.file_uploader("📂 Carga tu archivo data.csv", type=["csv"])
 
@@ -24,28 +24,19 @@ if archivo is not None:
     scaler = StandardScaler()
     X = scaler.fit_transform(df[variables])
 
-    # UMAP
-    reducer = umap.UMAP(
-        n_neighbors=15,
-        min_dist=0.1,
-        metric="euclidean",
-        random_state=42
-    )
-
-    embedding = reducer.fit_transform(X)
+    # PCA
+    pca = PCA(n_components=2)
+    embedding = pca.fit_transform(X)
 
     # Seleccionar variable de color
     color_var = "Flujo inferido (KBPD)" if "Flujo inferido (KBPD)" in df.columns else variables[0]
-
-    # Convertir a numérico (soluciona el error)
     df[color_var] = pd.to_numeric(df[color_var], errors="coerce")
 
-    # Si sigue habiendo NaN, usar otra columna
     if df[color_var].isna().all():
         color_var = variables[0]
 
     # Graficar
-    st.subheader("🌈 Proyección UMAP (2D)")
+    st.subheader("🌈 Proyección PCA (2D)")
 
     fig, ax = plt.subplots(figsize=(10, 7))
 
@@ -59,8 +50,17 @@ if archivo is not None:
     )
 
     plt.colorbar(scatter, label=color_var)
-    ax.set_title("UMAP - Proyección 2D del Dataset Industrial", fontsize=14, fontweight="bold")
-    ax.set_xlabel("UMAP 1")
-    ax.set_ylabel("UMAP 2")
+    ax.set_title("PCA - Proyección 2D del Dataset Industrial", fontsize=14, fontweight="bold")
+    ax.set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]*100:.1f}% varianza)")
+    ax.set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]*100:.1f}% varianza)")
 
     st.pyplot(fig)
+
+    # Mostrar cargas de variables
+    st.subheader("📊 Importancia de variables en PC1 y PC2")
+    cargas = pd.DataFrame(
+        pca.components_.T,
+        columns=["PC1", "PC2"],
+        index=variables
+    )
+    st.dataframe(cargas)
