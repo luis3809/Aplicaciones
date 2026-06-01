@@ -1,13 +1,12 @@
 import streamlit as st
 import pandas as pd
-import seaborn as sns
+import umap
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
 
-# Estilo profesional
-sns.set_theme(style="whitegrid")
+st.title("🔍 Reducción de Dimensionalidad con UMAP - Dataset Industrial")
 
-st.title("🔥 Mapa de Calor Profesional - Motor CAT G3600")
-
+# Subir archivo data.csv
 archivo = st.file_uploader("📂 Carga tu archivo data.csv", type=["csv"])
 
 if archivo is not None:
@@ -16,38 +15,46 @@ if archivo is not None:
     st.subheader("📄 Vista previa del dataset")
     st.dataframe(df)
 
-    variables = ["RPM", "Temperatura_aceite", "Temperatura_refrigerante", "Presion_aceite", "Carga"]
-    variables_presentes = [v for v in variables if v in df.columns]
+    # Seleccionar columnas numéricas
+    variables = df.select_dtypes(include=["float64", "int64"]).columns.tolist()
 
-    if len(variables_presentes) >= 2:
+    st.subheader("📌 Columnas numéricas detectadas")
+    st.write(variables)
 
-        st.subheader("📊 Matriz de correlación de Pearson")
-        corr = df[variables_presentes].corr(method="pearson")
-        st.dataframe(corr)
+    # Escalado (UMAP funciona mejor con datos normalizados)
+    scaler = StandardScaler()
+    X = scaler.fit_transform(df[variables])
 
-        st.subheader("🎨 Heatmap Profesional con Colores Intensos")
+    # Aplicar UMAP
+    reducer = umap.UMAP(
+        n_neighbors=15,
+        min_dist=0.1,
+        metric="euclidean",
+        random_state=42
+    )
 
-        fig, ax = plt.subplots(figsize=(9, 6))
+    embedding = reducer.fit_transform(X)
 
-        sns.heatmap(
-            corr,
-            annot=True,
-            fmt=".2f",
-            cmap="RdBu_r",          # Paleta con pigmentación fuerte
-            center=0,               # Asegura contraste
-            robust=True,            # Evita colores apagados
-            linewidths=1,           # Líneas más visibles
-            linecolor="black",      # Bordes profesionales
-            cbar_kws={"shrink": 0.8, "label": "Coeficiente de correlación"},
-            square=True,
-            ax=ax
-        )
+    # Graficar UMAP
+    st.subheader("🌈 Proyección UMAP (2D)")
 
-        ax.set_title("Correlación entre Variables del Motor CAT G3600", fontsize=16, fontweight="bold")
-        plt.xticks(rotation=45, ha="right")
-        plt.yticks(rotation=0)
+    fig, ax = plt.subplots(figsize=(10, 7))
 
-        st.pyplot(fig)
+    # Colorear por una variable relevante (ej: Flujo inferido)
+    color_var = "Flujo inferido (KBPD)" if "Flujo inferido (KBPD)" in df.columns else variables[0]
 
-    else:
-        st.error("El archivo debe contener al menos dos columnas válidas.")
+    scatter = ax.scatter(
+        embedding[:, 0],
+        embedding[:, 1],
+        c=df[color_var],
+        cmap="viridis",
+        s=20,
+        alpha=0.8
+    )
+
+    plt.colorbar(scatter, label=color_var)
+    ax.set_title("UMAP - Proyección 2D del Dataset Industrial", fontsize=14, fontweight="bold")
+    ax.set_xlabel("UMAP 1")
+    ax.set_ylabel("UMAP 2")
+
+    st.pyplot(fig)
