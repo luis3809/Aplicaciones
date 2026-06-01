@@ -4,9 +4,8 @@ import umap
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 
-st.title("🔍 Reducción de Dimensionalidad con UMAP - Dataset Industrial")
+st.title("🔍 UMAP - Dataset Industrial")
 
-# Subir archivo data.csv
 archivo = st.file_uploader("📂 Carga tu archivo data.csv", type=["csv"])
 
 if archivo is not None:
@@ -21,11 +20,11 @@ if archivo is not None:
     st.subheader("📌 Columnas numéricas detectadas")
     st.write(variables)
 
-    # Escalado (UMAP funciona mejor con datos normalizados)
+    # Escalado
     scaler = StandardScaler()
     X = scaler.fit_transform(df[variables])
 
-    # Aplicar UMAP
+    # UMAP
     reducer = umap.UMAP(
         n_neighbors=15,
         min_dist=0.1,
@@ -35,13 +34,20 @@ if archivo is not None:
 
     embedding = reducer.fit_transform(X)
 
-    # Graficar UMAP
+    # Seleccionar variable de color
+    color_var = "Flujo inferido (KBPD)" if "Flujo inferido (KBPD)" in df.columns else variables[0]
+
+    # Convertir a numérico (soluciona el error)
+    df[color_var] = pd.to_numeric(df[color_var], errors="coerce")
+
+    # Si sigue habiendo NaN, usar otra columna
+    if df[color_var].isna().all():
+        color_var = variables[0]
+
+    # Graficar
     st.subheader("🌈 Proyección UMAP (2D)")
 
     fig, ax = plt.subplots(figsize=(10, 7))
-
-    # Colorear por una variable relevante (ej: Flujo inferido)
-    color_var = "Flujo inferido (KBPD)" if "Flujo inferido (KBPD)" in df.columns else variables[0]
 
     scatter = ax.scatter(
         embedding[:, 0],
