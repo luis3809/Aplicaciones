@@ -12,7 +12,8 @@ st.markdown("""
         </p>
     </div>
 """, unsafe_allow_html=True)
-st.title("Algoritmo de aprendizaje automático no supervisado K-Means      ")
+st.title("Algoritmo de aprendizaje automático no supervisado  " \
+"K-Means ")
 
 archivo = st.file_uploader("Carga tu archivo CSV", type=["csv"])
 
