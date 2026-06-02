@@ -24,7 +24,7 @@ if archivo is not None:
 
     # LIMITE DE REGISTROS: 1000 filas y 5 columnas
     MAX_FILAS = 1000
-    MAX_COLUMNAS = 5
+    MAX_COLUMNAS = 7
 
     if df.shape[0] > MAX_FILAS:
         st.error(f"❌ El archivo tiene {df.shape[0]} filas. El máximo permitido es {MAX_FILAS}.")
