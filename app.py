@@ -9,8 +9,7 @@ st.markdown("""
     <div style='background-color:#0A1F44;padding:18px;border-radius:8px;margin-bottom:20px'>
         <h2 style='color:white;margin:0;'>🔵 Analizar datos de un SCADA</h2>
         <p style='color:#D9E1F2;margin:0;font-size:16px;'>
-            Convierte esa curiosidad en interacción real. Carga tu archivo SCADA y descubre los modos de operación de tu equipo.
-        </p>
+            Convierte esa curiosidad en interacción real. Carga tu archivo SCADA y descubre los modos de operación de tu equipo. El formato de tu archivo csv max 1000 filas y 7 columnas.
     </div>
 """, unsafe_allow_html=True)
 
@@ -24,7 +23,7 @@ if archivo is not None:
     df = df.apply(pd.to_numeric, errors='coerce')
     df = df.dropna(axis=1, how='all')
     df = df.dropna()
-    
+
     # LIMITE DE REGISTROS: 1000 filas y 5 columnas
     MAX_FILAS = 1000
     MAX_COLUMNAS = 7
