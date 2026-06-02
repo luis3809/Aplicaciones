@@ -4,15 +4,15 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
-st.title("🔵 K-Means sin PCA (visualización directa)")
+st.title("Algoritmo de aprendizaje automático no supervisado K-Means (visualización directa)")
 
-archivo = st.file_uploader("📂 Carga tu archivo CSV", type=["csv"])
+archivo = st.file_uploader("Carga tu archivo CSV", type=["csv"])
 
 if archivo is not None:
     df = pd.read_csv(archivo)
 
-    # 🔒 LIMITES: 200 filas y 5 columnas
-    MAX_FILAS = 200
+    # LIMITE DE REGISTROS: 1000 filas y 5 columnas
+    MAX_FILAS = 1000
     MAX_COLUMNAS = 5
 
     if df.shape[0] > MAX_FILAS:
@@ -23,13 +23,13 @@ if archivo is not None:
         st.error(f"❌ El archivo tiene {df.shape[1]} columnas. El máximo permitido es {MAX_COLUMNAS}.")
         st.stop()
 
-    st.subheader("📄 Vista previa del dataset")
+    st.subheader("Vista previa del dataset")
     st.dataframe(df)
 
     # Seleccionar columnas numéricas
     variables = df.select_dtypes(include=["float64", "int64"]).columns.tolist()
 
-    st.subheader("📌 Selecciona dos variables para visualizar")
+    st.subheader("Selecciona dos variables para visualizar")
     var_x = st.selectbox("Eje X", variables)
     var_y = st.selectbox("Eje Y", variables)
 
@@ -43,7 +43,7 @@ if archivo is not None:
     df["cluster"] = modelo.fit_predict(X)
 
     # Gráfico
-    st.subheader("🌈 Clustering K-Means (sin PCA)")
+    st.subheader("Clustering K-Means (sin PCA)")
 
     fig, ax = plt.subplots(figsize=(10, 7))
     scatter = ax.scatter(df[var_x], df[var_y], c=df["cluster"], cmap="tab10", s=40)
