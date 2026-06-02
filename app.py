@@ -1,12 +1,13 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
-st.title("📉 PCA 2D - Dataset Industrial")
+st.title("🔵 Clustering K-Means para Datos Industriales")
 
-archivo = st.file_uploader("📂 Carga tu archivo data.csv", type=["csv"])
+archivo = st.file_uploader("📂 Carga tu archivo CSV", type=["csv"])
 
 if archivo is not None:
     df = pd.read_csv(archivo)
@@ -17,6 +18,10 @@ if archivo is not None:
     # Seleccionar columnas numéricas
     variables = df.select_dtypes(include=["float64", "int64"]).columns.tolist()
 
+    if len(variables) < 2:
+        st.error("El dataset necesita al menos 2 columnas numéricas.")
+        st.stop()
+
     st.subheader("📌 Columnas numéricas detectadas")
     st.write(variables)
 
@@ -24,43 +29,37 @@ if archivo is not None:
     scaler = StandardScaler()
     X = scaler.fit_transform(df[variables])
 
-    # PCA
+    # Selección de número de clusters
+    k = st.slider("Selecciona el número de clusters", 2, 10, 3)
+
+    # Modelo K-Means
+    modelo = KMeans(n_clusters=k, random_state=42)
+    df["cluster"] = modelo.fit_predict(X)
+
+    st.subheader("📊 Resultados del clustering")
+    st.write(df[["cluster"] + variables].head())
+
+    # PCA para visualización 2D
     pca = PCA(n_components=2)
     embedding = pca.fit_transform(X)
 
-    # Seleccionar variable de color
-    color_var = "Flujo inferido (KBPD)" if "Flujo inferido (KBPD)" in df.columns else variables[0]
-    df[color_var] = pd.to_numeric(df[color_var], errors="coerce")
-
-    if df[color_var].isna().all():
-        color_var = variables[0]
-
-    # Graficar
-    st.subheader("🌈 Proyección PCA (2D)")
+    st.subheader("🌈 Visualización 2D (PCA + K-Means)")
 
     fig, ax = plt.subplots(figsize=(10, 7))
-
     scatter = ax.scatter(
         embedding[:, 0],
         embedding[:, 1],
-        c=df[color_var],
-        cmap="viridis",
-        s=20,
+        c=df["cluster"],
+        cmap="tab10",
+        s=40,
         alpha=0.8
     )
 
-    plt.colorbar(scatter, label=color_var)
-    ax.set_title("PCA - Proyección 2D del Dataset Industrial", fontsize=14, fontweight="bold")
+    plt.colorbar(scatter, label="Cluster")
     ax.set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]*100:.1f}% varianza)")
     ax.set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]*100:.1f}% varianza)")
+    ax.set_title("Clustering K-Means en 2D (PCA)")
 
     st.pyplot(fig)
 
-    # Mostrar cargas de variables
-    st.subheader("📊 Importancia de variables en PC1 y PC2")
-    cargas = pd.DataFrame(
-        pca.components_.T,
-        columns=["PC1", "PC2"],
-        index=variables
-    )
-    st.dataframe(cargas)
+    st.success("Clustering completado exitosamente.")
