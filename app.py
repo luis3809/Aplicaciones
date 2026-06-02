@@ -4,15 +4,15 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
-st.title("Algoritmo de aprendizaje automático no supervisado K-Means (visualización directa)")
 st.markdown("""
     <div style='background-color:#0A1F44;padding:18px;border-radius:8px;margin-bottom:20px'>
-        <h2 style='color:white;margin:0;'>🔵 K-Means para Datos SCADA</h2>
+        <h2 style='color:white;margin:0;'>🔵 K-Means para analizar datos de un SCADA</h2>
         <p style='color:#D9E1F2;margin:0;font-size:16px;'>
             Convierte esa curiosidad en interacción real. Carga tu archivo SCADA y descubre los modos de operación de tu equipo.
         </p>
     </div>
 """, unsafe_allow_html=True)
+st.title("Algoritmo de aprendizaje automático no supervisado K-Means (visualización directa)")
 
 archivo = st.file_uploader("Carga tu archivo CSV", type=["csv"])
 
