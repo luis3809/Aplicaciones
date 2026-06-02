@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
-st.title("📉 PCA 2D - Dataset Industrial")
+st.title("📊 PCA con Cargas de Variables")
 
 archivo = st.file_uploader("📂 Carga tu archivo data.csv", type=["csv"])
 
@@ -28,39 +28,32 @@ if archivo is not None:
     pca = PCA(n_components=2)
     embedding = pca.fit_transform(X)
 
-    # Seleccionar variable de color
-    color_var = "Flujo inferido (KBPD)" if "Flujo inferido (KBPD)" in df.columns else variables[0]
-    df[color_var] = pd.to_numeric(df[color_var], errors="coerce")
+    # Mostrar cargas
+    st.subheader("📊 Cargas de Variables en PC1 y PC2")
 
-    if df[color_var].isna().all():
-        color_var = variables[0]
-
-    # Graficar
-    st.subheader("🌈 Proyección PCA (2D)")
-
-    fig, ax = plt.subplots(figsize=(10, 7))
-
-    scatter = ax.scatter(
-        embedding[:, 0],
-        embedding[:, 1],
-        c=df[color_var],
-        cmap="viridis",
-        s=20,
-        alpha=0.8
-    )
-
-    plt.colorbar(scatter, label=color_var)
-    ax.set_title("PCA - Proyección 2D del Dataset Industrial", fontsize=14, fontweight="bold")
-    ax.set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]*100:.1f}% varianza)")
-    ax.set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]*100:.1f}% varianza)")
-
-    st.pyplot(fig)
-
-    # Mostrar cargas de variables
-    st.subheader("📊 Importancia de variables en PC1 y PC2")
     cargas = pd.DataFrame(
         pca.components_.T,
         columns=["PC1", "PC2"],
         index=variables
     )
+
     st.dataframe(cargas)
+
+    # Gráfico de cargas
+    st.subheader("📈 Gráfico de Cargas (PC1 vs PC2)")
+
+    fig, ax = plt.subplots(figsize=(10, 7))
+
+    ax.scatter(cargas["PC1"], cargas["PC2"])
+
+    for i, var in enumerate(variables):
+        ax.text(cargas["PC1"][i], cargas["PC2"][i], var)
+
+    ax.axhline(0, color='gray', linewidth=0.5)
+    ax.axvline(0, color='gray', linewidth=0.5)
+
+    ax.set_xlabel("PC1")
+    ax.set_ylabel("PC2")
+    ax.set_title("Cargas de Variables en PCA")
+
+    st.pyplot(fig)
