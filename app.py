@@ -40,20 +40,18 @@ if archivo is not None:
     st.dataframe(cargas)
 
     # Gráfico de cargas
-    st.subheader("📈 Gráfico de Cargas (PC1 vs PC2)")
+fig, ax = plt.subplots(figsize=(10, 7))
 
-    fig, ax = plt.subplots(figsize=(10, 7))
+ax.scatter(cargas["PC1"], cargas["PC2"])
 
-    ax.scatter(cargas["PC1"], cargas["PC2"])
+for i, var in enumerate(variables):
+    ax.text(cargas["PC1"].iloc[i], cargas["PC2"].iloc[i], var)
 
-    for i, var in enumerate(variables):
-        ax.text(cargas["PC1"][i], cargas["PC2"][i], var)
+ax.axhline(0, color='gray', linewidth=0.5)
+ax.axvline(0, color='gray', linewidth=0.5)
 
-    ax.axhline(0, color='gray', linewidth=0.5)
-    ax.axvline(0, color='gray', linewidth=0.5)
+ax.set_xlabel("PC1")
+ax.set_ylabel("PC2")
+ax.set_title("Cargas de Variables en PCA")
 
-    ax.set_xlabel("PC1")
-    ax.set_ylabel("PC2")
-    ax.set_title("Cargas de Variables en PCA")
-
-    st.pyplot(fig)
+st.pyplot(fig)
