@@ -21,7 +21,10 @@ archivo = st.file_uploader("Carga tu archivo CSV", type=["csv"])
 
 if archivo is not None:
     df = pd.read_csv(archivo)
-
+    df = df.apply(pd.to_numeric, errors='coerce')
+    df = df.dropna(axis=1, how='all')
+    df = df.dropna()
+    
     # LIMITE DE REGISTROS: 1000 filas y 5 columnas
     MAX_FILAS = 1000
     MAX_COLUMNAS = 7
