@@ -51,7 +51,7 @@ if archivo is not None:
     df["cluster"] = modelo.fit_predict(X)
 
     # Gráfico
-    st.subheader("Clustering K-Means (sin PCA)")
+    st.subheader("Clustering K-Means (agrupamiento de datos)")
 
     fig, ax = plt.subplots(figsize=(10, 7))
     scatter = ax.scatter(df[var_x], df[var_y], c=df["cluster"], cmap="tab10", s=40)
