@@ -4,16 +4,22 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
+#cCABECERA Y TITULO
+
 st.markdown("""
-    <div style='background-color:#0A1F44;padding:18px;border-radius:8px;margin-bottom:20px'>
-        <h2 style='color:white;margin:0;'>🔵 K-Means para analizar datos de un SCADA</h2>
-        <p style='color:#D9E1F2;margin:0;font-size:16px;'>
-            Convierte esa curiosidad en interacción real. Carga tu archivo SCADA y descubre los modos de operación de tu equipo.
-        </p>
+    <div style='padding:10px 0 20px 0;'>
+        <h1 style='font-size:42px; font-weight:800; margin-bottom:0;'>
+            Aprendizaje automático no supervisado
+        </h1>
+        <h1 style='font-size:48px; font-weight:900; color:#4A90E2; margin-top:0;'>
+            K-Means
+        </h1>
     </div>
 """, unsafe_allow_html=True)
+
 st.title("Aprendizaje automático no supervisado K-Means ")
 
+# CARGA DE ARCHIVO CSV
 archivo = st.file_uploader("Carga tu archivo CSV", type=["csv"])
 
 if archivo is not None:
