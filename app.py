@@ -11,6 +11,18 @@ archivo = st.file_uploader("📂 Carga tu archivo CSV", type=["csv"])
 if archivo is not None:
     df = pd.read_csv(archivo)
 
+    # 🔒 LIMITES: 200 filas y 5 columnas
+    MAX_FILAS = 200
+    MAX_COLUMNAS = 5
+
+    if df.shape[0] > MAX_FILAS:
+        st.error(f"❌ El archivo tiene {df.shape[0]} filas. El máximo permitido es {MAX_FILAS}.")
+        st.stop()
+
+    if df.shape[1] > MAX_COLUMNAS:
+        st.error(f"❌ El archivo tiene {df.shape[1]} columnas. El máximo permitido es {MAX_COLUMNAS}.")
+        st.stop()
+
     st.subheader("📄 Vista previa del dataset")
     st.dataframe(df)
 
