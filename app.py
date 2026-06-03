@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 # CABECERA Y TÍTULO
 st.markdown("""
     <div style='background-color:#0A1F44;padding:18px;border-radius:8px;margin-bottom:20px'>
-        <h2 style='color:white;margin:0;'>🔵 Analizar datos de un SCADA</h2>
+        <h2 style='color:white;margin:0;'>🔵 Analiza los datos de un SCADA</h2>
         <p style='color:#D9E1F2;margin:0;font-size:16px;'>
             Convierte esa curiosidad en interacción real. Carga tu archivo SCADA y descubre los modos de operación de tu equipo. El formato de tu archivo csv (numérico) max 1000 filas y 7 columnas.
     </div>
